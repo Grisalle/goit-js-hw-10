@@ -2,7 +2,6 @@ import { fetchBreeds, fetchCatByBreed } from "./js/cat-api";
 import Notiflix from 'notiflix';
 import SlimSelect from "slim-select";
 import 'slim-select/dist/slimselect.css';
-import './css/styles.css'
 
 const selectEl = document.querySelector(".breed-select");
 const loaderEl = document.querySelector(".loader");
@@ -18,16 +17,20 @@ fetchBreeds()
         .map(({ id, name }) => `<option value="${id}">${name}</option>`)
         .join("");
         
-        selectEl.innerHTML = dataList;
+        selectEl.insertAdjacentHTML("beforeend", dataList);
         
         new SlimSelect({
-            select: selectEl
+            select: selectEl,
+            settings: {
+                placeholderText: '-- Select the breed of the cat --',
+            }
         });
 
         loaderEl.classList.add('visually-hidden');
         selectEl.classList.remove('visually-hidden');
     })
     .catch(() => {
+        loaderEl.classList.add('visually-hidden');
         Notiflix.Notify.failure(errorEl.textContent);
     });
 
@@ -56,6 +59,7 @@ selectEl.addEventListener('change', function (event) {
             })
             .catch(() => {
                 catInfoEl.innerHTML = '';
+                loaderEl.classList.add('visually-hidden');
                 Notiflix.Notify.failure(errorEl.textContent);
             })
     }
